@@ -21,6 +21,7 @@ class GameManager:
         self.gameBoard = GameBoard(5, 5)
         self.player = None
         self.enemies = []
+        self.gameOver = False
 
     # prints board and all players in game to console
     def printGameBoard(self):
@@ -41,6 +42,34 @@ class GameManager:
                     print("--", end="")
                 
             print("")
+
+    def moveBlob(self, moveInput, blob, gameBoard):
+        if moveInput == "w":
+            if(blob.y == 0):
+                print ("Invalid move. Try again.") #Return this so not always logging errors other calls
+                return
+            blob.move(blob.x, blob.y - 1)
+        elif moveInput == "a":
+            if(blob.x == 0):
+                print ("Invalid move. Try again.")
+                return
+            blob.move(blob.x - 1, blob.y)
+        elif moveInput == "s":
+            if(blob.y == gameBoard.height - 1):
+                print ("Invalid move. Try again.")
+                return
+            blob.move(blob.x, blob.y + 1)
+        elif moveInput == "d":
+            if(blob.x == gameBoard.width - 1):
+                print ("Invalid move. Try again.")
+                return
+            blob.move(blob.x + 1, blob.y)
+        elif moveInput == "q":
+            print ("Quitting game.")
+            self.gameOver = True
+        else:
+            print ("Undknown command. Try again.")
+
 
     def blobFight(self, blob1, blob2):
         if blob1.size >= blob2.size:
@@ -63,43 +92,18 @@ class GameManager:
         print ("Enemy 2: " + str(self.enemies[1].x) + ", " + str(self.enemies[1].y))
         
         # Main gameloop
-        gameOver = False
-        while gameOver is False:
+        while self.gameOver is False:
             self.printGameBoard()
 
             # Handle all possible moves. Evaluate after.
             print ("Enter a move: ")
-            move = input()
-            if move == "w":
-                if(self.player.y == 0):
-                    print ("Invalid move. Try again.")
-                    continue
-                self.player.move(self.player.x, self.player.y - 1)
-            elif move == "a":
-                if(self.player.x == 0):
-                    print ("Invalid move. Try again.")
-                    continue
-                self.player.move(self.player.x - 1, self.player.y)
-            elif move == "s":
-                if(self.player.y == self.gameBoard.height - 1):
-                    print ("Invalid move. Try again.")
-                    continue
-                self.player.move(self.player.x, self.player.y + 1)
-            elif move == "d":
-                if(self.player.x == self.gameBoard.width - 1):
-                    print ("Invalid move. Try again.")
-                    continue
-                self.player.move(self.player.x + 1, self.player.y)
-            elif move == "q":
-                print ("Quitting game.")
-                gameOver = True
-            else:
-                print ("Invalid move. Try again.")
+            moveInput = input()
+            self.moveBlob(moveInput, self.player, self.gameBoard)
             
             # Do everything resulting from a move
-            print ("Player: " + str(self.player.x) + ", " + str(self.player.y))
+            # print ("Player: " + str(self.player.x) + ", " + str(self.player.y))
             for enemy in self.enemies:
-                print ("Enemy: " + str(enemy.x) + ", " + str(enemy.y))
+                # print ("Enemy: " + str(enemy.x) + ", " + str(enemy.y))
                 if self.player.x == enemy.x and self.player.y == enemy.y:
                     self.blobFight(self.player, enemy)
             # elif self.player.x == self.enemies[1].x and self.player.y == self.enemies[1].y:
